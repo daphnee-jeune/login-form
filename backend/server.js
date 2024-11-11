@@ -35,6 +35,9 @@ app.post("/auth/login", async (req, res) => {
     return res.status(401), json({ message: "Invalid password" });
 
   // generate and send token on success
-  const token = generateToken(user)
-  res.json({ token })
+  const token = generateToken(user);
+  res.json({ token });
+});
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
