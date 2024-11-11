@@ -22,3 +22,19 @@ const generateToken = (user) => {
   });
 };
 
+// Auth endpoint
+app.post("/auth/login", async (req, res) => {
+  const { username, password } = req.body;
+  // find users in mock db
+  const user = users.find((u) => u.username === username);
+  if (!user) return res.status(404).json({ message: "User not found" });
+
+  // verify pw
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+  if (!isPasswordValid)
+    return res.status(401), json({ message: "Invalid password" });
+
+  // generate and send token on success
+  const token = generateToken(user)
+  res.json({ token })
+});
