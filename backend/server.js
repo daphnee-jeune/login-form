@@ -37,6 +37,22 @@ app.post("/auth/login", async (req, res) => {
   // generate and send token on success
   const token = generateToken(user);
   res.json({ token });
+
+  // token verification middleware for protected routes
+  const authenticationToken = (req, res, next) => {
+    const token = req.headers["authorization"];
+    if (!token) return res.status(403).json({ message: "Token is required" });
+
+    jwt.verify(token, SECRET_KEY, (err, user) => {
+      if (err) return res.status(403).json({ message: "Invalid token" });
+      req.user = user;
+      next();
+    });
+  };
+  // protected route
+  app.get("/protected", authenticationToken, (req, res) => {
+    res.json({ message: "This is a protected data.", user: req.user });
+  });
 });
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
